@@ -61,6 +61,14 @@ compile ('com.google.android.gms:play-services:6.5.87') {
 }
 ```
 
+#### Android: Resolving issue with Twitter Fabric conflicts (DexException)
+
+If you use Crashlytics, or other Twitter Fabric libraries in your app, it's possible that you get a `com.android.dex.DexException`. If this occurs, just head to `platforms/android/io.branch.sdk/<yourapp>-build-branch-extras.gradle` file, and change to look like the following:
+
+```
+compile ('io.branch.sdk.android:library:2.+') { exclude module: 'answers-shim' }
+```
+
 #### iOS: Enable Universal Links
 
 In iOS 9.2, Apple dropped support for URI scheme redirects. You must enable Universal Links if you want Branch-generated links to work in your iOS app. To do this:
