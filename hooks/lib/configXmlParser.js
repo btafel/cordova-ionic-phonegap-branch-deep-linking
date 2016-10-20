@@ -31,6 +31,8 @@ Parser for config.xml file. Read plugin-specific preferences (from <branch-confi
       return null;
     }
 
+    console.log("configXml", configXml);
+
     // look for data from the <branch-config> tag
     var ulXmlPreferences = configXml.widget['branch-config'];
     if (ulXmlPreferences == null || ulXmlPreferences.length == 0) {
