@@ -67,8 +67,8 @@ Parser for config.xml file. Read plugin-specific preferences (from <branch-confi
   function getTeamIdPreference(xmlPreferences) {
     if (xmlPreferences.hasOwnProperty('ios-team-id')) {
       // return xmlPreferences['ios-team-id'][0]['$']['value'];
-      console.log("ios-team-id", xmlPreferences['ios-team-id']['$']);
-      return xmlPreferences['ios-team-id']['$']['value'];
+      console.log("ios-team-id", xmlPreferences['ios-team-id']['@']);
+      return xmlPreferences['ios-team-id']['@']['value'];
     }
 
     return null;
@@ -77,8 +77,8 @@ Parser for config.xml file. Read plugin-specific preferences (from <branch-confi
   function getAndroidPrefixPreference(xmlPreferences) {
     if (xmlPreferences.hasOwnProperty('android-prefix')) {
       // return xmlPreferences['android-prefix'][0]['$']['value'];
-      console.log("android-prefix", xmlPreferences['android-prefix']['$']);
-      return xmlPreferences['android-prefix']['$']['value'];
+      console.log("android-prefix", xmlPreferences['android-prefix']['@']);
+      return xmlPreferences['android-prefix']['@']['value'];
     }
 
     return null;
@@ -120,7 +120,8 @@ Parser for config.xml file. Read plugin-specific preferences (from <branch-confi
       scheme: DEFAULT_SCHEME,
       name: ''
     },
-        hostProperties = xmlElement['$'];
+        // hostProperties = xmlElement['$'];
+    hostProperties = xmlElement['@'];
 
     if (hostProperties == null || hostProperties.length == 0) {
       return null;
