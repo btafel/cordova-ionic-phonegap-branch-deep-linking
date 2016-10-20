@@ -30,6 +30,8 @@ Parser for config.xml file. Read plugin-specific preferences (from <branch-confi
     }
 
     // look for data from the <branch-config> tag
+    console.log("configXml", configXml);
+
     var ulXmlPreferences = configXml.widget['branch-config'];
     if (ulXmlPreferences == null || ulXmlPreferences.length == 0) {
       console.warn('<branch-config> tag is not set in the config.xml. Universal Links plugin is not going to work.');
