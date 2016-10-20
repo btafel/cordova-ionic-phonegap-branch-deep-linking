@@ -41,7 +41,8 @@ Parser for config.xml file. Read plugin-specific preferences (from <branch-confi
       return null;
     }
 
-    var xmlPreferences = ulXmlPreferences[0];
+    // var xmlPreferences = ulXmlPreferences[0];
+    var xmlPreferences = ulXmlPreferences;
 
     // read hosts
     var hosts = constructHostsList(xmlPreferences);
