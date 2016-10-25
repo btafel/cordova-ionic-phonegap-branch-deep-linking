@@ -60,7 +60,7 @@ module.exports = function(context) {
           // First check to see if the Embed Framework node exists, if not, add it.
           // This is all we need to do as they are added to the embedded section by default.
           
-          if (!xcodeProject.pbxEmbedFrameworksBuildPhaseObj(targetUUID)) {
+          /*if (!xcodeProject.pbxEmbedFrameworksBuildPhaseObj(targetUUID)) {
               buildPhaseResult = xcodeProject.addBuildPhase([], "PBXCopyFilesBuildPhase", "Embed Frameworks", targetUUID,  "framework");
               // No idea why, but "Framework" (value 10) is not available in node-xcode, set it here manually so libraries
               // embed correctly.  If we don't set it, the folder type defaults to "Shared Frameworks".
@@ -69,7 +69,7 @@ module.exports = function(context) {
           }
           else {
               console.log("Embedded Build Phase already added");
-          }
+          }*/
 
           // This is critical to include, otherwise the library loader cannot find the dynamic Branch libs at runtime on a device.
           xcodeProject.addBuildProperty("LD_RUNPATH_SEARCH_PATHS", "\"$(inherited) @executable_path/Frameworks\"", "Debug");
