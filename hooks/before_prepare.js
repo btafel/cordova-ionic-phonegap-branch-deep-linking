@@ -52,14 +52,14 @@ module.exports = function(context) {
           var targetUUID = xcodeProject.getFirstTarget().uuid;
 
           // Remove all of the frameworks because they were not embeded correctly.
-          // var frameworkPath = cfg.name() + "/Plugins/cordova-ionic-phonegap-branch-deep-linking/";
-          var frameworkPath = cfg.name() + "/Plugins/branch-cordova-sdk/";
+          var frameworkPath = cfg.name() + "/Plugins/io.branch.sdk/";
+          // var frameworkPath = cfg.name() + "/Plugins/branch-cordova-sdk/";
 
           xcodeProject.removeFramework(frameworkPath + "Branch.framework", {customFramework: true, embed: true, link: true});
 
           // First check to see if the Embed Framework node exists, if not, add it.
           // This is all we need to do as they are added to the embedded section by default.
-          /*
+          
           if (!xcodeProject.pbxEmbedFrameworksBuildPhaseObj(targetUUID)) {
               buildPhaseResult = xcodeProject.addBuildPhase([], "PBXCopyFilesBuildPhase", "Embed Frameworks", targetUUID,  "framework");
               // No idea why, but "Framework" (value 10) is not available in node-xcode, set it here manually so libraries
@@ -69,7 +69,7 @@ module.exports = function(context) {
           }
           else {
               console.log("Embedded Build Phase already added");
-          }*/
+          }
 
           // This is critical to include, otherwise the library loader cannot find the dynamic Branch libs at runtime on a device.
           xcodeProject.addBuildProperty("LD_RUNPATH_SEARCH_PATHS", "\"$(inherited) @executable_path/Frameworks\"", "Debug");
