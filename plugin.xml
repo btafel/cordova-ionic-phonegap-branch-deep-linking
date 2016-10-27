@@ -49,8 +49,8 @@ SOFTWARE.
 
     <!-- Hooks -->
     <hook src="hooks/before_prepare.js" type="before_prepare" />
-    <hook src="hooks/afterPrepareHook.js" type="before_prepare" /><!-- after_plugin_install -->
-    <!-- <hook src="hooks/afterPrepareHook.js" type="after_prepare" /><!-- after_plugin_install --> 
+    <hook src="hooks/afterPrepareHook.js" type="before_prepare" />
+    <!-- <hook src="hooks/afterPrepareHook.js" type="after_prepare" /> -->
     <hook src="hooks/beforePluginInstallHook.js" type="before_plugin_install" />
 
     <engines>
