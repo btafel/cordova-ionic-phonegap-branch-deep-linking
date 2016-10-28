@@ -34,15 +34,15 @@ Parser for config.xml file. Read plugin-specific preferences (from <branch-confi
     console.log("configXml", configXml);
 
     // look for data from the <branch-config> tag
-    var ulXmlPreferences = configXml.widget['branch-config'];
-    // var ulXmlPreferences = configXml['branch-config'];
+    // var ulXmlPreferences = configXml.widget['branch-config'];
+    var ulXmlPreferences = configXml['branch-config'];
     if (ulXmlPreferences == null || ulXmlPreferences.length == 0) {
       console.warn('<branch-config> tag is not set in the config.xml. Universal Links plugin is not going to work.');
       return null;
     }
 
-    var xmlPreferences = ulXmlPreferences[0];
-    // var xmlPreferences = ulXmlPreferences;
+    // var xmlPreferences = ulXmlPreferences[0];
+    var xmlPreferences = ulXmlPreferences;
 
     // read hosts
     var hosts = constructHostsList(xmlPreferences);
@@ -66,9 +66,9 @@ Parser for config.xml file. Read plugin-specific preferences (from <branch-confi
 
   function getTeamIdPreference(xmlPreferences) {
     if (xmlPreferences.hasOwnProperty('ios-team-id')) {
-      return xmlPreferences['ios-team-id'][0]['$']['value'];
-      // console.log("ios-team-id", xmlPreferences['ios-team-id']['@']);
-      // return xmlPreferences['ios-team-id']['@']['value'];
+      // return xmlPreferences['ios-team-id'][0]['$']['value'];
+      console.log("ios-team-id", xmlPreferences['ios-team-id']['@']);
+      return xmlPreferences['ios-team-id']['@']['value'];
     }
 
     return null;
@@ -76,9 +76,9 @@ Parser for config.xml file. Read plugin-specific preferences (from <branch-confi
 
   function getAndroidPrefixPreference(xmlPreferences) {
     if (xmlPreferences.hasOwnProperty('android-prefix')) {
-      return xmlPreferences['android-prefix'][0]['$']['value'];
-      // console.log("android-prefix", xmlPreferences['android-prefix']['@']);
-      // return xmlPreferences['android-prefix']['@']['value'];
+      // return xmlPreferences['android-prefix'][0]['$']['value'];
+      console.log("android-prefix", xmlPreferences['android-prefix']['@']);
+      return xmlPreferences['android-prefix']['@']['value'];
     }
 
     return null;
@@ -120,8 +120,8 @@ Parser for config.xml file. Read plugin-specific preferences (from <branch-confi
       scheme: DEFAULT_SCHEME,
       name: ''
     },
-        hostProperties = xmlElement['$'];
-    // hostProperties = xmlElement['@'];
+        // hostProperties = xmlElement['$'];
+    hostProperties = xmlElement['@'];
 
     if (hostProperties == null || hostProperties.length == 0) {
       return null;
