@@ -1,9 +1,9 @@
-var gulp       = require('gulp');
-var fs         = require('fs');
+var gulp = require('gulp');
+var fs = require('fs');
 var sourcemaps = require('gulp-sourcemaps');
-var babel      = require('gulp-babel');
-var eslint     = require('gulp-eslint');
-var jscs       = require('gulp-jscs');
+var babel = require('gulp-babel');
+var eslint = require('gulp-eslint');
+var jscs = require('gulp-jscs');
 
 gulp.task('prerelease', [ 'setupNpm', 'babel', 'lint' ]);
 
@@ -32,12 +32,25 @@ function genNpmPluginXML() {
   files = files.concat(emitFiles(root + 'Branch-SDK/Requests/'));
 
   var newLineIndent = '\n        ';
-  xml = xml.replace('<!--[Branch Framework Reference]-->', newLineIndent
-    + files.join(newLineIndent));
+  xml = xml.replace('<!--[Branch Framework Reference]-->', newLineIndent +
+    files.join(newLineIndent));
 
   fs.writeFileSync('plugin.xml', xml);
 };
+// first match only!
+var PLUGIN_XML_VERSION_REGEX = /^\s*version=\"[\d\.]*\"\>$/m;
+gulp.task('update-plugin-xml-version', () => {
+  var versionNumber = require('./package.json').version;
+  // this will break if plugin.xml is not formatted exactly as we expect
+  // so you might end up needing to fix the regex
+  for (target of [ '.xml', '.template.xml' ]) {
+    var pluginXML = fs.readFileSync('plugin' + target, 'utf8');
+    var newVersionXML = `        version="${versionNumber}">`;
+    pluginXML = pluginXML.replace(PLUGIN_XML_VERSION_REGEX, newVersionXML);
+    fs.writeFileSync('plugin' + target, pluginXML);
+  }
 
+});
 // generate plugin.xml for local development
 // here we reference the frameworks instead of all the files directly
 function getDevPluginXML() {
@@ -53,10 +66,10 @@ function setIosNpmOrDev(npmOrDev) {
   if (npmOrDev === 'npm') {
     content = '#define BRANCH_NPM true';
   }
-else if (npmOrDev === 'dev') {
+  else if (npmOrDev === 'dev') {
     content = '//empty';
   }
-else {
+  else {
     throw new Error('expected deployed|local, not ' + deployedOrLocal);
   }
   fs.writeFileSync('src/ios/BranchNPM.h', content + '\n');
@@ -70,7 +83,7 @@ function emitFiles(path) {
     if (filename.match(/\.m$/)) {
       fileType = 'source';
     }
-else if (filename.match(/\.h$/) || filename.match(/\.pch$/)) {
+    else if (filename.match(/\.h$/) || filename.match(/\.pch$/)) {
       fileType = 'header';
     }
     if (fileType) {
@@ -97,12 +110,11 @@ function babelize(taskName, dir) {
   });
   gulp.task(taskName + '-babel', [ taskName + '-copy' ], () => {
     return gulp.src(srcPattern)
-      .pipe(sourcemaps.init())
-      .pipe(babel({
-        presets: [ 'es2015', 'stage-2' ]
-      }))
-      .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest(destDir));
+    .pipe(sourcemaps.init())
+    .pipe(babel({
+      presets: [ 'es2015', 'stage-2' ]
+    }))
+    .pipe(gulp.dest(destDir));
   });
 }
 
@@ -118,31 +130,32 @@ gulp.task('babel', babelTasks);
 gulp.task('lint', [ 'eslint', 'jscs-lint' ]);
 
 var srcs = [
-  'hooks.es6/**/*.js',
-  'www.es6/**/*.js',
-  'gulpfile.js',
-  'tests.es6/**/*.js',
-  'testbed/www/js.es6/**/*.js',
-  '!node_modules/**',
-  '!testbed/platforms/**',
-  '!testbed/plugins/**',
-  '!tests-harness/platforms/**',
-  '!tests-harness/plugins/**'
+'hooks.es6/**/*.js',
+'www.es6/**/*.js',
+'gulpfile.js',
+'tests.es6/**/*.js',
+'testbed/www/js.es6/**/*.js',
+'!node_modules/**',
+'!testbed/platforms/**',
+'!testbed/plugins/**',
+'!tests-harness/platforms/**',
+'!tests-harness/plugins/**'
 ];
 
 gulp.task('eslint', () => {
   return gulp.src(srcs)
-    .pipe(eslint())
-    .pipe(eslint.format())
-    .pipe(eslint.failAfterError());
+  .pipe(eslint())
+  .pipe(eslint.format())
+  .pipe(eslint.failAfterError());
 });
 
 function jscsTask(fix) {
   var ret = gulp.src(srcs)
-    .pipe(jscs({ fix: fix }))
-    .pipe(jscs.reporter())
-    .pipe(jscs.reporter('fail'));
-
+  .pipe(jscs({
+    fix: fix
+  }))
+  .pipe(jscs.reporter())
+  .pipe(jscs.reporter('fail'));
   if (fix) {
     ret.pipe(gulp.dest('.'));
   }

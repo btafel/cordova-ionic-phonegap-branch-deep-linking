@@ -26,7 +26,7 @@ SOFTWARE.
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="io.branch.sdk"
-        version="2.2.3">
+        version="2.4.0">
 
     <name>branch-cordova-sdk</name>
     <description>Branch SDK Plugin</description>
@@ -48,7 +48,9 @@ SOFTWARE.
     <preference name="URI_SCHEME" />
 
     <!-- Hooks -->
+    <hook src="hooks/before_prepare.js" type="before_prepare" />
     <hook src="hooks/afterPrepareHook.js" type="after_prepare" />
+    <!-- <hook src="hooks/beforePluginInstallHook.js" type="before_prepare" /> -->
     <hook src="hooks/beforePluginInstallHook.js" type="before_plugin_install" />
 
     <engines>
@@ -76,7 +78,7 @@ SOFTWARE.
             </intent-filter>
         </config-file>
         <source-file src="src/android/io/branch/BranchSDK.java" target-dir="src/io/branch" />
-        <framework src="io.branch.sdk.android:library:1+" />
+        <framework src="io.branch.sdk.android:library:2+" />
     </platform>
 
     <!-- ios -->
@@ -101,6 +103,11 @@ SOFTWARE.
                 </dict>
             </array>
         </config-file>
+        <framework src="SafariServices.framework"/>
+        <framework src="AdSupport.framework"/>
+        <framework src="CoreTelephony.framework"/>
+        <framework src="CoreSpotlight.framework"/>
+        <framework src="MobileCoreServices.framework"/>
         <header-file src="src/ios/BranchNPM.h" />
         <header-file src="src/ios/BranchSDK.h" />
         <source-file src="src/ios/BranchSDK.m" />
