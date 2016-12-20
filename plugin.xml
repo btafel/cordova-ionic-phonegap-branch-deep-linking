@@ -115,7 +115,7 @@ SOFTWARE.
         <source-file src="src/ios/BranchSDK.m" />
         <source-file src="src/ios/AppDelegate+BranchSdk.m" />
 <!-- <<<<<<< HEAD -->
-        <!-- <framework custom="true" embed="true" src="src/ios/dependencies/Branch.framework" /> -->
+        <framework custom="true" embed="true" src="src/ios/dependencies/Branch.framework" />
 <!-- ======= -->
         
         <header-file src="src/ios/dependencies/Fabric/ANSCompatibility.h" />
