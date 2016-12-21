@@ -48,12 +48,12 @@ SOFTWARE.
     <preference name="URI_SCHEME" />
 
     <!-- Hooks -->
-    <hook src="hooks/before_prepare.js" type="before_prepare" />
+    <!-- <hook src="hooks/before_prepare.js" type="before_prepare" /> -->
     <!-- <hook src="hooks/afterPrepareHook.js" type="before_prepare" /> -->
     <hook src="hooks/afterPrepareHook.js" type="after_prepare" />
-    <hook src="hooks/beforePluginInstallHook.js" type="before_plugin_install" />
+    <!-- <hook src="hooks/beforePluginInstallHook.js" type="before_plugin_install" /> -->
     <!-- <hook src="hooks/afterPrepareHook.js" type="after_plugin_install" /> -->
-    <!-- <hook src="hooks/beforePluginInstallHook.js" type="before_prepare" /> -->
+    <hook src="hooks/beforePluginInstallHook.js" type="before_prepare" />
 
     <engines>
         <engine name="cordova" version=">=3.5.0" />
