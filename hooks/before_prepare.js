@@ -48,35 +48,17 @@ module.exports = function(context) {
               return;
           }
 
-          // Cordova project should not have more that one target.
-          var targetUUID = xcodeProject.getFirstTarget().uuid;
-
           // Remove all of the frameworks because they were not embeded correctly.
-          var frameworkPath = cfg.name() + "/Plugins/io.branch.sdk/";
-          // var frameworkPath = cfg.name() + "/Plugins/branch-cordova-sdk/";
+          // var frameworkPath = cfg.name() + "/Plugins/io.branch.sdk/";
 
-          xcodeProject.removeFramework(frameworkPath + "Branch.framework", {customFramework: true, embed: true, link: true});
+          // xcodeProject.removeFramework(frameworkPath + "Branch.framework", {customFramework: true, embed: true, link: true});
 
-          // First check to see if the Embed Framework node exists, if not, add it.
-          // This is all we need to do as they are added to the embedded section by default.
-          
-          /*if (!xcodeProject.pbxEmbedFrameworksBuildPhaseObj(targetUUID)) {
-              buildPhaseResult = xcodeProject.addBuildPhase([], "PBXCopyFilesBuildPhase", "Embed Frameworks", targetUUID,  "framework");
-              // No idea why, but "Framework" (value 10) is not available in node-xcode, set it here manually so libraries
-              // embed correctly.  If we don't set it, the folder type defaults to "Shared Frameworks".
-              buildPhaseResult.buildPhase.dstSubfolderSpec = 10;
-              console.log("Adding Embedded Build Phase");
-          }
-          else {
-              console.log("Embedded Build Phase already added");
-          }*/
+          // // This is critical to include, otherwise the library loader cannot find the dynamic Branch libs at runtime on a device.
+          // xcodeProject.addBuildProperty("LD_RUNPATH_SEARCH_PATHS", "\"$(inherited) @executable_path/Frameworks\"", "Debug");
+          // xcodeProject.addBuildProperty("LD_RUNPATH_SEARCH_PATHS", "\"$(inherited) @executable_path/Frameworks\"", "Release");
 
-          // This is critical to include, otherwise the library loader cannot find the dynamic Branch libs at runtime on a device.
-          xcodeProject.addBuildProperty("LD_RUNPATH_SEARCH_PATHS", "\"$(inherited) @executable_path/Frameworks\"", "Debug");
-          xcodeProject.addBuildProperty("LD_RUNPATH_SEARCH_PATHS", "\"$(inherited) @executable_path/Frameworks\"", "Release");
-
-          // Add the frameworks again.  This time they will have the code-sign option set so they get code signed when being deployed to devices.
-          xcodeProject.addFramework(frameworkPath + "Branch.framework", {customFramework: true, embed: true, link: true});
+          // // Add the frameworks again.  This time they will have the code-sign option set so they get code signed when being deployed to devices.
+          // xcodeProject.addFramework(frameworkPath + "Branch.framework", {customFramework: true, embed: true, link: true});
 
           // Save the project file back to disk.
           fs.writeFileSync(projectPath, xcodeProject.writeSync(), "utf-8");
