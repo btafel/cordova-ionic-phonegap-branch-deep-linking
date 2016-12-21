@@ -10,11 +10,11 @@
 
 #import "BranchNPM.h"
 
-#ifdef BRANCH_NPM
+// #ifdef BRANCH_NPM
     #import "Branch.h" 
-#else
-    #import <Branch/Branch.h>
-#endif
+// #else
+    // #import <Branch/Branch.h>
+// #endif
 
 @interface AppDelegate (BranchSDK)
 
