@@ -439,6 +439,11 @@ Branch.prototype.creditHistory = function () {
     return execute('getCreditHistory');
 };
 
+Branch.prototype.getTracking = function () {
+
+    return execute('getTracking');
+};
+
 /**
  * NonBranchLinkHandler callback placeholder.
  *
