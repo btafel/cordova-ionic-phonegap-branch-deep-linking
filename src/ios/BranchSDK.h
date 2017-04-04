@@ -58,4 +58,7 @@
 - (void)onLinkShareResponse:(CDVInvokedUrlCommand*)command;
 - (void)listOnSpotlight:(CDVInvokedUrlCommand*)command;
 
+//AdvertisingIdentifier
+- (void)getTracking:(CDVInvokedUrlCommand*)command;
+
 @end

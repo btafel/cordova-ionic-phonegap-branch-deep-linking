@@ -6,9 +6,7 @@
 //
 
 #import "BranchSDK.h"
-#import "AppleAdvertising.h"
-
-@implementation AppleAdvertising
+#import <AdSupport/AdSupport.h>
 
 @interface BranchSDK()
 
