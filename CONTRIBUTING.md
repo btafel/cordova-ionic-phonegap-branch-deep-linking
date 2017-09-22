@@ -1,32 +1,119 @@
-# Development Conventions
+# Contributing
 
-This document outlines our development processes.
+*Questions? [Contact us](https://support.branch.io/support/tickets/new)*
 
-## ES6
+1. [Todo](#todo)
+1. [Data Flow](#data-flow)
+1. [Dependencies](#dependencies)
+1. [Setup](#setup)
+1. [Develop](#develop)
+1. [Test](#test)
+1. [Submit](#submit)
+1. [Publish](#publish)
 
-Source code for all .js files in this project is written in es6 and then compiled via babel to es5. Unfortunately, for legacy reasons, the es5 needs to be stored in version control. As such, if you want to change a js file, edit the version in the corresponding .es6 directory, compile it with the `gulp babel` command, and then commit it as well as the resulting .js file.
+## TODO
 
-## Pull Requests
+  -  `<plugin name="branch-cordova-sdk" spec="../" />` or `cordova plugin add ../` causes an infinite loop when importing Branch on Cordova 7.0.1. Works on Cordova 6.5.0.
+  -  need to remove `TODO` from `init.sh` for `ios-sim` error
+  -  `cordova platform update android@6.2.2` added for Cordova 6.5.0 error on Android
 
-All changes to this project should be made in the form of pull requests against master. Use snake-case prefixed by 'feat/' or 'fix/' for features/fixes. Feel free to use any of the commit types listed [here](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#type) as well. Note that when pull requests are merged in they will be automatically released to npm by (Travis CI)[https://travis-ci.org/] and (semantic-release)[https://github.com/semantic-release/semantic-release] so make sure to fully test.
+## Data Flow
 
-## Commit Messages
+- [Users sets values](https://github.com/BranchMetrics/cordova-ionic-phonegap-branch-deep-linking/blob/master/testbed/config.template.xml#L6-L13)
+- [Hooks run on build](https://github.com/BranchMetrics/cordova-ionic-phonegap-branch-deep-linking/blob/master/plugin.xml#L45-L47)
+- [Hooks call scripts](https://github.com/BranchMetrics/cordova-ionic-phonegap-branch-deep-linking/tree/master/src/scripts/hooks)
+- [Scripts for iOS](https://github.com/BranchMetrics/cordova-ionic-phonegap-branch-deep-linking/tree/master/src/scripts/ios)
+- [Scripts for Android](https://github.com/BranchMetrics/cordova-ionic-phonegap-branch-deep-linking/tree/master/src/scripts/android)
 
-Please format your commit messages to match [Angular's Conventions](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#-git-commit-guidelines). These messages are parsed using semantic release to determine version numbers so it is important that you stick to them exactly. We recommend using the `npm run commit` script installed in this project to draft conformant messages.
 
-## Linting
+## Dependencies
 
-The style of all js files in this project are strictly checked using [jscs](http://jscs.info/) and [eslint](http://eslint.org/) before any pull request/release is made. You can manually check your local clone using the `gulp lint` command (don't forget to `npm install -g gulp` if you haven't already). Many problems can be automatically fixed by `gulp jscs-fix`. Don't forget to commit before running jscs-fix in case you end up needing to back out changes.
+- Homebrew
 
-## Testing
+  ```sh
+  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)";
+  brew update;
+  brew doctor;
+  export PATH="/usr/local/bin:$PATH";
+  ```
 
-See [tests-harness/README.md](https://github.com/BranchMetrics/cordova-ionic-phonegap-branch-deep-linking/blob/master/tests-harness/README.md) for details on how to run this project's test suite. Please run the test suite before merging any branches.
+- Node
 
-## Updating IOS dependencies
+  ```sh
+  brew install node;
+  ```
 
-This project depends on [ios-branch-deep-linking](https://github.com/BranchMetrics/ios-branch-deep-linking). To upgrade that dependency a [release](https://github.com/BranchMetrics/ios-branch-deep-linking/releases) of it run the following script:
+- Gulp
 
-```shell
-# <tag> is the name of the release. e,g, '0.12.5'
-$ src/ios/dependencies/update.sh <tag>
-```
+  ```sh
+  npm install -g gulp-cli; # linter
+  ```
+
+- Yarn
+
+  ```sh
+  npm install -g yarn # faster npm
+  ```
+
+## Setup
+
+- Local
+
+  ```sh
+  git clone git@github.com:BranchMetrics/cordova-ionic-phonegap-branch-deep-linking.git;
+  cd cordova-ionic-phonegap-branch-deep-linking;
+  yarn install
+  ```
+
+## Develop
+
+- Changes to `/src` don't need a `init.sh` rebuild, just a `cordova run ios`
+
+- **[optional]** Update [Android](https://github.com/BranchMetrics/android-branch-deep-linking/releases) and [iOS](https://github.com/BranchMetrics/ios-branch-deep-linking/releases) SDKs
+
+  ```sh
+  ./src/scripts/npm/updateNativeSdk.sh -a 2.5.9 -i 0.13.5
+  ```
+
+- **[optional]** Update `CHANGELOG.md`
+
+  ```sh
+  npm run changelog
+  ```
+
+## Test
+
+- Validate all features on both `iOS` and `Android` on `device` only (no `simulator` or `TestFlight`)
+
+  - ios
+
+    ```sh
+    ./testbed/init -idc
+    ```
+  
+  - android
+
+    ```sh
+    ./testbed/init -adc
+    ```
+
+  - files
+  
+    - test `branch.js` with console logs to Safari and Chrome inspectors
+    - test `hooks` by changing to `before_prepare` and console logs with `cordova build`
+    - test `BranchSDK.m` with `NSLog()` with Xcode
+    - test `BranchSDK.java` with `system.out.println()` with Android Studio
+
+## Submit
+
+- **[required]** Git [comment prefix](https://github.com/semantic-release/semantic-release): `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `revert`
+
+- Versioning and tags are handled automatically based on commit messages
+
+- Submit code with a [pull request](https://github.com/BranchMetrics/cordova-ionic-phonegap-branch-deep-linking)
+
+## Publish
+
+- Pull request code review from a Branch team member
+
+- Merges will automatically add SDK to NPM

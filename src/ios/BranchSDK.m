@@ -21,8 +21,6 @@
 - (void)pluginInitialize
 {
     self.branchUniversalObjArray = [[NSMutableArray alloc] init];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(postUnhandledURL:) name:@"BSDKPostUnhandledURL" object:nil];
 }
 
 #pragma mark - Private APIs
@@ -87,25 +85,19 @@
 
     [branch initSessionWithLaunchOptions:nil andRegisterDeepLinkHandler:^(NSDictionary *params, NSError *error) {
 
-        BOOL isFromBranchLink = NO;
         NSString *resultString = nil;
         CDVPluginResult *pluginResult = nil;
 
-        // NOTE: For Universal Links. Using clicked_branch_link key as condition at the moment to identify if block is run due to Universal Links.
-        isFromBranchLink = [[params objectForKey:@"+clicked_branch_link"] boolValue];
-
         if (!error) {
-            if (params != nil && [params count] > 0 && isFromBranchLink) {
- 
+            if (params != nil && [params count] > 0) {
+
                 NSError *err;
                 NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&err];
 
                 if (!jsonData) {
                     NSLog(@"Parsing Error: %@", [err localizedDescription]);
                     NSDictionary *errorDict = [NSDictionary dictionaryWithObjectsAndKeys:[err localizedDescription], @"error", nil];
-                    NSData* errorJSON = [NSJSONSerialization dataWithJSONObject:errorDict
-                                                                        options:NSJSONWritingPrettyPrinted
-                                                                          error:&err];
+                    NSData* errorJSON = [NSJSONSerialization dataWithJSONObject:errorDict options:NSJSONWritingPrettyPrinted error:&err];
 
                     resultString = [[NSString alloc] initWithData:errorJSON encoding:NSUTF8StringEncoding];
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:resultString];
@@ -113,8 +105,6 @@
                     resultString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
                 }
-            } else {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:FALSE];
             }
         }
         else {
@@ -122,22 +112,15 @@
 
             // We create a JSON string result, because we're getting an error if we directly return a string result.
             NSDictionary *errorDict = [NSDictionary dictionaryWithObjectsAndKeys:[error localizedDescription], @"error", nil];
-            NSData* errorJSON = [NSJSONSerialization dataWithJSONObject:errorDict
-                                                                options:NSJSONWritingPrettyPrinted
-                                                                  error:&error];
+            NSData* errorJSON = [NSJSONSerialization dataWithJSONObject:errorDict options:NSJSONWritingPrettyPrinted error:&error];
 
             resultString = [[NSString alloc] initWithData:errorJSON encoding:NSUTF8StringEncoding];
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:resultString];
         }
 
-        if (isFromBranchLink) {
-            [self.commandDelegate evalJs:[NSString stringWithFormat:@"DeepLinkHandler(%@)", resultString]];
-        }
-        else if (self.deepLinkUrl) {
-            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"BSDKPostUnhandledURL" object:self.deepLinkUrl]];
-        }
-        self.deepLinkUrl = nil;
-        
+        // assigns data to DeepLinkHandler within branch.js
+        [self.commandDelegate evalJs:[NSString stringWithFormat:@"DeepLinkHandler(%@)", resultString]];
+
         if (command != nil) {
             [self.commandDelegate sendPluginResult: pluginResult callbackId: command.callbackId];
         }
@@ -148,7 +131,7 @@
 {
 
     [[Branch getInstance] setRequestMetadataKey:@"$mixpanel_distinct_id" value:[command.arguments objectAtIndex:0]];
-    
+
 }
 
 - (void)setDebug:(CDVInvokedUrlCommand*)command
@@ -161,7 +144,7 @@
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:enableDebug];
 
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
- }
+}
 
 - (void)getAutoInstance:(CDVInvokedUrlCommand*)command
 {
@@ -209,10 +192,9 @@
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
         }
         else {
-            
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[error localizedDescription]];
         }
-        
+
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
@@ -228,13 +210,14 @@
 {
     NSString *name;
     NSDictionary *state;
+
     // if a state dictionary is passed as an argument
     if ([command.arguments count] == 2) {
         name = [command.arguments objectAtIndex:0];
         state = [command.arguments objectAtIndex:1];
     }
     else {
-        name = (NSString *)command.arguments;
+        name = [command.arguments objectAtIndex:0];
     }
 
     Branch *branch = [self getInstance];
@@ -246,9 +229,95 @@
         [branch userCompletedAction:name];
     }
 
-    // TODO: need to resolve according to result of userCompletedAction, but no callback version of the method is exposed.
+    // TODO: iOS Branch.userCompletedAction needs a callback for success or failure
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: @"Success"];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)sendCommerceEvent:(CDVInvokedUrlCommand*)command
+{
+    NSDictionary *data = [command.arguments objectAtIndex:0];
+    NSDictionary *metadata;
+    BNCCommerceEvent *commerce = [[BNCCommerceEvent alloc] init];
+    NSArray *categories = [NSArray arrayWithObjects:BNCProductCategoryAnimalSupplies, BNCProductCategoryApparel, BNCProductCategoryArtsEntertainment, BNCProductCategoryBabyToddler, BNCProductCategoryBusinessIndustrial, BNCProductCategoryCamerasOptics, BNCProductCategoryElectronics, BNCProductCategoryFoodBeverageTobacco, BNCProductCategoryFurniture, BNCProductCategoryHardware, BNCProductCategoryHealthBeauty, BNCProductCategoryHomeGarden, BNCProductCategoryLuggageBags, BNCProductCategoryMature, BNCProductCategoryMedia, BNCProductCategoryOfficeSupplies, BNCProductCategoryReligious, BNCProductCategorySoftware, BNCProductCategorySportingGoods, BNCProductCategoryToysGames, BNCProductCategoryVehiclesParts, nil];
+    NSArray *currencies = [NSArray arrayWithObjects:@"AED", @"AFN", @"ALL", @"AMD", @"ANG", @"AOA", @"ARS", @"AUD", @"AWG", @"AZN", @"BAM", @"BBD", @"BDT", @"BGN", @"BHD", @"BIF", @"BMD", @"BND", @"BOB", @"BOV", @"BRL", @"BSD", @"BTN", @"BWP", @"BYN", @"BYR", @"BZD", @"CAD", @"CDF", @"CHE", @"CHF", @"CHW", @"CLF", @"CLP", @"CNY", @"COP", @"COU", @"CRC", @"CUC", @"CUP", @"CVE", @"CZK", @"DJF", @"DKK", @"DOP", @"DZD", @"EGP", @"ERN", @"ETB", @"EUR", @"FJD", @"FKP", @"GBP", @"GEL", @"GHS", @"GIP", @"GMD", @"GNF", @"GTQ", @"GYD", @"HKD", @"HNL", @"HRK", @"HTG", @"HUF", @"IDR", @"ILS", @"INR", @"IQD", @"IRR", @"ISK", @"JMD", @"JOD", @"JPY", @"KES", @"KGS", @"KHR", @"KMF", @"KPW", @"KRW", @"KWD", @"KYD", @"KZT", @"LAK", @"LBP", @"LKR", @"LRD", @"LSL", @"LYD", @"MAD", @"MDL", @"MGA", @"MKD", @"MMK", @"MNT", @"MOP", @"MRO", @"MUR", @"MVR", @"MWK", @"MXN", @"MXV", @"MYR", @"MZN", @"NAD", @"NGN", @"NIO", @"NOK", @"NPR", @"NZD", @"OMR", @"PAB", @"PEN", @"PGK", @"PHP", @"PKR", @"PLN", @"PYG", @"QAR", @"RON", @"RSD", @"RUB", @"RWF", @"SAR", @"SBD", @"SCR", @"SDG", @"SEK", @"SGD", @"SHP", @"SLL", @"SOS", @"SRD", @"SSP", @"STD", @"SYP", @"SZL", @"THB", @"TJS", @"TMT", @"TND", @"TOP", @"TRY", @"TTD", @"TWD", @"TZS", @"UAH", @"UGX", @"USD", @"USN", @"UYI", @"UYU", @"UZS", @"VEF", @"VND", @"VUV", @"WST", @"XAF", @"XAG", @"XAU", @"XBA", @"XBB", @"XBC", @"XBD", @"XCD", @"XDR", @"XFU", @"XOF", @"XPD", @"XPF", @"XPT", @"XSU", @"XTS", @"XUA", @"XXX", @"YER", @"ZAR", @"ZMW", nil];
+
+    if ([command.arguments count] == 2) {
+        metadata = [command.arguments objectAtIndex:1];
+    }
+
+    for (id key in data) {
+        if ([key isEqualToString:@"revenue"]) {
+            NSString *value = ([[data objectForKey:key] isKindOfClass:[NSString class]]) ? [data objectForKey:key] : [[data objectForKey:key] stringValue];
+            commerce.revenue = [NSDecimalNumber decimalNumberWithString:value];
+        }
+        else if ([key isEqualToString:@"currency"]) {
+            NSString *value = ([[data objectForKey:key] isKindOfClass:[NSString class]]) ? [data objectForKey:key] : [[data objectForKey:key] stringValue];
+            commerce.currency = [currencies objectAtIndex:[value intValue]];
+        }
+        else if ([key isEqualToString:@"transactionID"]) {
+            commerce.transactionID = [data objectForKey:key];
+        }
+        else if ([key isEqualToString:@"shipping"]) {
+            NSString *value = ([[data objectForKey:key] isKindOfClass:[NSString class]]) ? [data objectForKey:key] : [[data objectForKey:key] stringValue];
+            commerce.shipping = [NSDecimalNumber decimalNumberWithString:value];
+        }
+        else if ([key isEqualToString:@"tax"]) {
+            NSString *value = ([[data objectForKey:key] isKindOfClass:[NSString class]]) ? [data objectForKey:key] : [[data objectForKey:key] stringValue];
+            commerce.tax = [NSDecimalNumber decimalNumberWithString:value];
+        }
+        else if ([key isEqualToString:@"coupon"]) {
+            commerce.coupon = [data objectForKey:key];
+        }
+        else if ([key isEqualToString:@"affiliation"]) {
+            commerce.affiliation = [data objectForKey:key];
+        }
+        else if ([key isEqualToString:@"products"] && [[data objectForKey:key] isKindOfClass:[NSArray class]]) {
+            NSMutableArray *products = [[NSMutableArray alloc] init];
+            NSArray *dataProducts = [data objectForKey:key];
+            for (NSDictionary *dataDictionary in dataProducts) {
+                BNCProduct *product = [[BNCProduct alloc] init];
+                for (id key in dataDictionary) {
+                    if ([key isEqualToString:@"sku"]) {
+                        product.sku = [dataDictionary objectForKey:key];
+                    }
+                    else if ([key isEqualToString:@"name"]) {
+                        product.name = [dataDictionary objectForKey:key];
+                    }
+                    else if ([key isEqualToString:@"price"]) {
+                        NSString *value = ([[dataDictionary objectForKey:key] isKindOfClass:[NSString class]]) ? [dataDictionary objectForKey:key] : [[dataDictionary objectForKey:key] stringValue];
+                        product.price = [NSDecimalNumber decimalNumberWithString:value];
+                    }
+                    else if ([key isEqualToString:@"quantity"]) {
+                        NSString *value = ([[dataDictionary objectForKey:key] isKindOfClass:[NSString class]]) ? [dataDictionary objectForKey:key] : [[dataDictionary objectForKey:key] stringValue];
+                        product.quantity = [NSNumber numberWithInt:[value intValue]];
+                    }
+                    else if ([key isEqualToString:@"brand"]) {
+                        product.brand = [dataDictionary objectForKey:key];
+                    }
+                    else if ([key isEqualToString:@"category"]) {
+                        NSString *value = ([[dataDictionary objectForKey:key] isKindOfClass:[NSString class]]) ? [dataDictionary objectForKey:key] : [[dataDictionary objectForKey:key] stringValue];
+                        product.category = [categories objectAtIndex:[value intValue]];
+                    }
+                    else if ([key isEqualToString:@"variant"]) {
+                        product.variant = [dataDictionary objectForKey:key];
+                    }
+                }
+                [products addObject:product];
+            }
+            commerce.products = products;
+        }
+    }
+
+    [[Branch getInstance] sendCommerceEvent:commerce metadata:metadata withCompletion:^(NSDictionary *response, NSError *error) {
+        CDVPluginResult *pluginResult = nil;
+        if (!error) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: @"Success"];
+        } else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[error localizedDescription]];
+        }
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
 }
 
 - (void)logout:(CDVInvokedUrlCommand*)command
@@ -418,7 +487,7 @@
 - (void)registerView:(CDVInvokedUrlCommand*)command
 {
     int branchUniversalObjectId = [[command.arguments objectAtIndex:0] intValue];
-    
+
     NSMutableDictionary *branchUniversalObjDict = [self.branchUniversalObjArray objectAtIndex:branchUniversalObjectId];
     BranchUniversalObject *branchUniversalObj = [branchUniversalObjDict objectForKey:@"branchUniversalObj"];
 
@@ -527,13 +596,10 @@
         }
     }
 
-    [branchUniversalObj showShareSheetWithLinkProperties:linkProperties
-                                                andShareText:shareText
-                                                fromViewController:self.viewController
-                                                completion:^(NSString *activityType, BOOL completed) {
+    [branchUniversalObj showShareSheetWithLinkProperties:linkProperties andShareText:shareText fromViewController:self.viewController completion:^(NSString *activityType, BOOL completed) {
 
         int listenerCallbackId = [[command.arguments objectAtIndex:0] intValue];
-        
+
         if (completed) {
             NSLog(@"Share link complete");
             [branchUniversalObj getShortUrlWithLinkProperties:linkProperties andCallback:^(NSString *url, NSError *error) {
@@ -543,7 +609,7 @@
                 }
             }];
         }
-        
+
         CDVPluginResult *shareDialogDismissed = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
 
         NSMutableDictionary *branchUniversalObjDict = [self.branchUniversalObjArray objectAtIndex:listenerCallbackId];
@@ -593,9 +659,7 @@
         CDVPluginResult* pluginResult = nil;
         if (!error) {
             NSError *err;
-            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{@"result":string}
-                                                               options:0
-                                                                 error:&err];
+            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{@"result":string} options:0 error:&err];
             if (!jsonData) {
                 NSLog(@"Parsing Error: %@", [err localizedDescription]);
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[err localizedDescription]];
@@ -609,31 +673,6 @@
         }
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
-}
-
-#pragma mark - Private Methods
-- (void)postUnhandledURL:(NSNotification *)notification {
-    // We create a JSON string result, because we're unable to handle the url. We will include the url in the return string.
-    NSError *error;
-    NSString *urlString;
-    
-//    if ([notification.object respondsToSelector:@selector(absoluteString:)]) {
-    SEL selector = NSSelectorFromString(@"absoluteString:");
-    if ([notification.object respondsToSelector:selector]) {
-        urlString = [notification.object absoluteString];
-    } else {
-        urlString = notification.object;
-    }
-
-    if ([urlString isKindOfClass:[NSString class]]) {
-        NSDictionary *returnDict = [NSDictionary dictionaryWithObjectsAndKeys:@"Not a Branch link!", @"error", urlString, @"url", nil];
-        NSData* returnJSON = [NSJSONSerialization dataWithJSONObject:returnDict
-                                                             options:NSJSONWritingPrettyPrinted
-                                                               error:&error];
-
-        NSString *resultString = [[NSString alloc] initWithData:returnJSON encoding:NSUTF8StringEncoding];
-        [self.commandDelegate evalJs:[NSString stringWithFormat:@"NonBranchLinkHandler(%@)", resultString]];
-    }
 }
 
 #pragma mark - URL Methods (not fully implemented YET!)

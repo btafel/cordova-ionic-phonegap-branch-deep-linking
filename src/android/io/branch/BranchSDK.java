@@ -20,7 +20,12 @@ import android.net.Uri;
 import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
+import io.branch.referral.BranchViewHandler;
 import io.branch.referral.SharingHelper;
+import io.branch.referral.util.CommerceEvent;
+import io.branch.referral.util.CurrencyType;
+import io.branch.referral.util.Product;
+import io.branch.referral.util.ProductCategory;
 import io.branch.referral.util.ShareSheetStyle;
 
 public class BranchSDK extends CordovaPlugin {
@@ -86,69 +91,76 @@ public class BranchSDK extends CordovaPlugin {
 
         if (action.equals("setDebug")) {
             if (args.length() == 1) {
-                cordova.getThreadPool().execute(r);
+                cordova.getActivity().runOnUiThread(r);
             }
             return true;
         } else if (action.equals("initSession")) {
-            cordova.getThreadPool().execute(r);
+            cordova.getActivity().runOnUiThread(r);
             return true;
         } else if (action.equals("setMixpanelToken")) {
-            cordova.getThreadPool().execute(r);
+            cordova.getActivity().runOnUiThread(r);
             return true;
         } else {
             if (this.instance != null) {
                 if (action.equals("setIdentity")) {
-                    cordova.getThreadPool().execute(r);
+                    cordova.getActivity().runOnUiThread(r);
                     return true;
                 } else if (action.equals("userCompletedAction")) {
                     if (args.length() < 1 && args.length() > 2) {
                         callbackContext.error(String.format("Parameter mismatched. 1-2 is required but %d is given", args.length()));
                         return false;
                     }
-                    cordova.getThreadPool().execute(r);
+                    cordova.getActivity().runOnUiThread(r);
+                    return true;
+                } else if (action.equals("sendCommerceEvent")) {
+                    if (args.length() < 1 && args.length() > 2) {
+                        callbackContext.error(String.format("Parameter mismatched. 1-2 is required but %d is given", args.length()));
+                        return false;
+                    }
+                    cordova.getActivity().runOnUiThread(r);
                     return true;
                 } else if (action.equals("getFirstReferringParams")) {
-                    cordova.getThreadPool().execute(r);
+                    cordova.getActivity().runOnUiThread(r);
                     return true;
                 } else if (action.equals("getLatestReferringParams")) {
-                    cordova.getThreadPool().execute(r);
+                    cordova.getActivity().runOnUiThread(r);
                     return true;
                 } else if (action.equals("logout")) {
-                    cordova.getThreadPool().execute(r);
+                    cordova.getActivity().runOnUiThread(r);
                     return true;
                 } else if (action.equals("loadRewards")) {
-                    cordova.getThreadPool().execute(r);
+                    cordova.getActivity().runOnUiThread(r);
                     return true;
                 } else if (action.equals("redeemRewards")) {
                     if (args.length() < 1 && args.length() > 2) {
                         callbackContext.error(String.format("Parameter mismatched. 1-2 is required but %d is given", args.length()));
                         return false;
                     }
-                    cordova.getThreadPool().execute(r);
+                    cordova.getActivity().runOnUiThread(r);
                     return true;
                 } else if (action.equals("getCreditHistory")) {
-                    cordova.getThreadPool().execute(r);
+                    cordova.getActivity().runOnUiThread(r);
                     return true;
                 } else if (action.equals("createBranchUniversalObject")) {
                     if (args.length() != 1) {
                         callbackContext.error(String.format("Parameter mismatched. 1 is required but %d is given", args.length()));
                         return false;
                     }
-                    cordova.getThreadPool().execute(r);
+                    cordova.getActivity().runOnUiThread(r);
                     return true;
                 } else if (action.equals(("generateShortUrl"))) {
                     if (args.length() != 3) {
                         callbackContext.error(String.format("Parameter mismatched. 3 is required but %d is given", args.length()));
                         return false;
                     }
-                    cordova.getThreadPool().execute(r);
+                    cordova.getActivity().runOnUiThread(r);
                     return true;
                 } else if (action.equals("registerView")) {
                     if (args.length() != 1) {
                         callbackContext.error(String.format("Parameter mismatched. 1 is required but %d is given", args.length()));
                         return false;
                     }
-                    cordova.getThreadPool().execute(r);
+                    cordova.getActivity().runOnUiThread(r);
                     return true;
                 } else if (action.equals("showShareSheet")) {
                     if (args.length() < 3) {
@@ -414,21 +426,21 @@ public class BranchSDK extends CordovaPlugin {
     private void showShareSheet(int instanceIdx, JSONObject options, JSONObject controlParams, JSONObject strings) throws JSONException {
 
         ShareSheetStyle shareSheetStyle = new ShareSheetStyle(this.activity, strings.getString("shareTitle"), strings.getString("shareText"))
-                .setCopyUrlStyle(this.activity.getResources().getDrawable(android.R.drawable.ic_menu_send), strings.getString("copyToClipboard"), strings.getString("clipboardSuccess"))
-                .setMoreOptionStyle(this.activity.getResources().getDrawable(android.R.drawable.ic_menu_search), strings.getString("more"))
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.EMAIL)
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.MESSAGE)
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.TWITTER)
-                .setAsFullWidthStyle(true)
-                .setSharingTitle(strings.getString("shareWith"));
+        .setCopyUrlStyle(this.activity.getResources().getDrawable(android.R.drawable.ic_menu_send), strings.getString("copyToClipboard"), strings.getString("clipboardSuccess"))
+        .setMoreOptionStyle(this.activity.getResources().getDrawable(android.R.drawable.ic_menu_search), strings.getString("more"))
+        .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
+        .addPreferredSharingOption(SharingHelper.SHARE_WITH.EMAIL)
+        .addPreferredSharingOption(SharingHelper.SHARE_WITH.MESSAGE)
+        .addPreferredSharingOption(SharingHelper.SHARE_WITH.TWITTER)
+        .setAsFullWidthStyle(true)
+        .setSharingTitle(strings.getString("shareWith"));
 
         BranchUniversalObjectWrapper branchObjWrapper = (BranchUniversalObjectWrapper) this.branchObjectWrappers.get(instanceIdx);
         BranchLinkProperties linkProperties = createLinkProperties(options, controlParams);
         BranchUniversalObject branchObj = branchObjWrapper.branchUniversalObj;
 
         branchObj.showShareSheet(this.activity, linkProperties, shareSheetStyle,
-                new ShowShareSheetListener(branchObjWrapper.onShareLinkDialogLaunched, branchObjWrapper.onShareLinkDialogDismissed, branchObjWrapper.onLinkShareResponse, branchObjWrapper.onChannelSelected));
+            new ShowShareSheetListener(branchObjWrapper.onShareLinkDialogLaunched, branchObjWrapper.onShareLinkDialogDismissed, branchObjWrapper.onLinkShareResponse, branchObjWrapper.onChannelSelected));
 
     }
 
@@ -470,14 +482,14 @@ public class BranchSDK extends CordovaPlugin {
                 for (int i=0; i<array.length(); i++){
                     linkProperties.addTag(array.get(i).toString());
                 }
-           }
+            }
         }
 
         Log.d(LCAT, "Adding control parameters:");
 
         // Add and iterate control parameters properties
         Iterator<?> keys = controlParams.keys();
-        
+
         while (keys.hasNext()) {
             String key = keys.next().toString();
 
@@ -518,6 +530,27 @@ public class BranchSDK extends CordovaPlugin {
 
         branchUniversalWrapper.branchUniversalObj.generateShortUrl(this.activity, linkProperties, new GenerateShortUrlListener(callbackContext));
 
+    }
+
+    /**
+     * <p>Sets the cookie based matching for all incoming requests.</p>
+     * <p>If you want cookie based matching, call this <b>before</b> initUserSession</p>
+     *
+     * @param linkDomain A {@link String} value to of the link domain for cookie based matching.
+     * @param callbackContext   A callback to execute at the end of this method
+     */
+    private void setCookieBasedMatching(String linkDomain, CallbackContext callbackContext)
+    {
+
+        this.activity = this.cordova.getActivity();
+
+        Branch instance = Branch.getAutoInstance(this.activity.getApplicationContext());
+
+        if (linkDomain != null) {
+            instance.enableCookieBasedMatching(linkDomain);
+        }
+
+        callbackContext.success("Success");
     }
 
     /**
@@ -603,6 +636,91 @@ public class BranchSDK extends CordovaPlugin {
     }
 
     /**
+     * <p>A void call to indicate that the user has performed a specific commerce event and for that to be
+     * reported to the Branch API.</p>
+     *
+     * @param action          A {@link String} value to be passed as an commerce event that the user has
+     *                        carried out.
+     * @param metaData        A {@link JSONObject} containing app-defined meta-data to be attached to a
+     *                        user action that has just been completed.
+     * @param callbackContext A callback to execute at the end of this method
+     */
+    private void sendCommerceEvent(JSONObject action, JSONObject metaData, CallbackContext callbackContext) throws JSONException {
+
+        CommerceEvent commerce = new CommerceEvent();
+        Iterator<String> keys = action.keys();
+        while(keys.hasNext()){
+            String key = keys.next();
+            String val;
+            try {
+                val = action.getString(key);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                callbackContext.error("Invalid key-value for " + key);
+                return;
+            }
+            if (key.equals("revenue")) {
+                commerce.setRevenue(Double.parseDouble(val));
+            } else if (key.equals("currency")) {
+                commerce.setCurrencyType(CurrencyType.values()[Integer.parseInt(val)]);
+            } else if (key.equals("transactionID")) {
+                commerce.setTransactionID(val);
+            } else if (key.equals("coupon")) {
+                commerce.setCoupon(val);
+            } else if (key.equals("shipping")) {
+                commerce.setShipping(Double.parseDouble(val));
+            } else if (key.equals("tax")) {
+                commerce.setTax(Double.parseDouble(val));
+            } else if (key.equals("affiliation")) {
+                commerce.setAffiliation(val);
+            } else if (key.equals("products")) {
+                JSONArray products = new JSONArray();
+                try {
+                    products = action.getJSONArray(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callbackContext.error("Invalid key-value for " + key);
+                    return;
+                }
+                for (int i = 0; i < products.length(); ++i) {
+                    Product product = new Product();
+                    JSONObject item = products.getJSONObject(i);
+                    keys = item.keys();
+                    while(keys.hasNext()) {
+                        key = keys.next();
+                        try {
+                            val = item.getString(key);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            callbackContext.error("Invalid key-value for product for " + key);
+                            return;
+                        }
+                        if (key.equals("sku")) {
+                            product.setSku(val);
+                        } else if (key.equals("name")) {
+                            product.setName(val);
+                        } else if (key.equals("price")) {
+                            product.setPrice(Double.parseDouble(val));
+                        } else if (key.equals("quantity")) {
+                            product.setQuantity(Integer.parseInt(val));
+                        } else if (key.equals("brand")) {
+                            product.setBrand(val);
+                        } else if (key.equals("category")) {
+                            product.setCategory(ProductCategory.values()[Integer.parseInt(val)]);
+                        } else if (key.equals("variant")) {
+                            product.setVariant(val);
+                        }
+                    }
+                    commerce.addProduct(product);
+                }
+            }
+        }
+
+        this.instance.sendCommerceEvent(commerce, metaData, new BranchViewEventsListener(callbackContext));
+
+    }
+
+    /**
      * <p>Gets the credit history of the specified bucket and triggers a callback to handle the
      * response.</p>
      *
@@ -645,6 +763,35 @@ public class BranchSDK extends CordovaPlugin {
     //----------- INNER CLASS LISTENERS ------------//
     //////////////////////////////////////////////////
 
+    protected class BranchViewEventsListener implements BranchViewHandler.IBranchViewEvents {
+
+        private CallbackContext _callbackContext;
+
+        public BranchViewEventsListener(CallbackContext callbackContext) {
+            callbackContext.success("Success");
+        }
+
+        @Override
+        public void onBranchViewVisible(String action, String branchViewID) {
+
+        }
+
+        @Override
+        public void onBranchViewAccepted(String action, String branchViewID) {
+
+        }
+
+        @Override
+        public void onBranchViewCancelled(String action, String branchViewID) {
+
+        }
+
+        @Override
+        public void onBranchViewError(int errorCode, String errorMsg, String action) {
+
+        }
+    }
+
     protected class SessionListener implements Branch.BranchReferralInitListener {
         private CallbackContext _callbackContext;
 
@@ -660,25 +807,8 @@ public class BranchSDK extends CordovaPlugin {
 
             if (error == null && referringParams != null) {
 
-                // params are the deep linked params associated with the link that the user clicked -> was re-directed to this app
-                // params will be empty if no data found.
-                try {
-                    if (referringParams.has("+clicked_branch_link") && referringParams.getBoolean("+clicked_branch_link")) {
-                        out = String.format("DeepLinkHandler(%s)", referringParams.toString());
-                        webView.sendJavascript(out);
-                    } else if (deepLinkUrl != null) {
-                        JSONObject message = new JSONObject();
-
-                        message.put("error", "Not a Branch link!");
-                        message.put("url", deepLinkUrl);
-
-                        out = String.format("NonBranchLinkHandler(%s)", message.toString());
-                        webView.sendJavascript(out);
-                    }
-                    deepLinkUrl = null;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                out = String.format("DeepLinkHandler(%s)", referringParams.toString());
+                webView.sendJavascript(out);
 
                 if (this._callbackContext != null) {
                     this._callbackContext.success(referringParams);
@@ -1121,6 +1251,8 @@ public class BranchSDK extends CordovaPlugin {
                         } else if (this.args.length() == 1) {
                             userCompletedAction(this.args.getString(0), this.callbackContext);
                         }
+                    } else if (this.action.equals("sendCommerceEvent")) {
+                        sendCommerceEvent(this.args.getJSONObject(0), this.args.getJSONObject(1), this.callbackContext);
                     } else if (this.action.equals("getFirstReferringParams")) {
                         getFirstReferringParams(this.callbackContext);
                     } else if (this.action.equals("getLatestReferringParams")) {
@@ -1168,7 +1300,5 @@ public class BranchSDK extends CordovaPlugin {
                 e.printStackTrace();
             }
         }
-
     }
-
 }

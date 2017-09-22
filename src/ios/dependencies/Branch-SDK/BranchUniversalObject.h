@@ -47,6 +47,7 @@ typedef NS_ENUM(NSInteger, ContentIndexMode) {
 - (void)registerViewWithCallback:(nullable callbackWithParams)callback;
 
 - (void)userCompletedAction:(nonnull NSString *)action;
+- (void)userCompletedAction:(nonnull NSString *)action withState:(nullable NSDictionary *)state;
 
 - (nullable NSString *)getShortUrlWithLinkProperties:(nonnull BranchLinkProperties *)linkProperties;
 - (nullable NSString *)getShortUrlWithLinkPropertiesAndIgnoreFirstClick:(nonnull BranchLinkProperties *)linkProperties;
@@ -55,11 +56,15 @@ typedef NS_ENUM(NSInteger, ContentIndexMode) {
 - (nullable UIActivityItemProvider *)getBranchActivityItemWithLinkProperties:(nonnull BranchLinkProperties *)linkProperties;
 
 - (void)showShareSheetWithShareText:(nullable NSString *)shareText completion:(nullable shareCompletion)completion;
+
 - (void)showShareSheetWithLinkProperties:(nullable BranchLinkProperties *)linkProperties andShareText:(nullable NSString *)shareText fromViewController:(nullable UIViewController *)viewController completion:(nullable shareCompletion)completion;
+
 // Returns with activityError as well
 - (void)showShareSheetWithLinkProperties:(nullable BranchLinkProperties *)linkProperties andShareText:(nullable NSString *)shareText fromViewController:(nullable UIViewController *)viewController completionWithError:(nullable shareCompletionWithError)completion;
+
 //iPad
 - (void)showShareSheetWithLinkProperties:(nullable BranchLinkProperties *)linkProperties andShareText:(nullable NSString *)shareText fromViewController:(nullable UIViewController *)viewController anchor:(nullable UIBarButtonItem *)anchor completion:(nullable shareCompletion)completion;
+
 // Returns with activityError as well
 - (void)showShareSheetWithLinkProperties:(nullable BranchLinkProperties *)linkProperties andShareText:(nullable NSString *)shareText fromViewController:(nullable UIViewController *)viewController anchor:(nullable UIBarButtonItem *)anchor completionWithError:(nullable shareCompletionWithError)completion;
 
@@ -72,4 +77,6 @@ typedef NS_ENUM(NSInteger, ContentIndexMode) {
 
 - (nonnull NSString *)description;
 
+- (NSDictionary*_Nonnull)getDictionaryWithCompleteLinkProperties:(BranchLinkProperties*_Nonnull)linkProperties;
+- (NSDictionary*_Nonnull)getParamsForServerRequestWithAddedLinkProperties:(BranchLinkProperties*_Nonnull)linkProperties;
 @end

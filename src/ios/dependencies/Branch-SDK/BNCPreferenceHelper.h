@@ -11,11 +11,12 @@
 #define FILE_NAME   [[NSString stringWithUTF8String:__FILE__] lastPathComponent]
 #define LINE_NUM    __LINE__
 
+NSURL* /* _Nonnull */ BNCURLForBranchDirectory(void);
+
 @interface BNCPreferenceHelper : NSObject
 
-@property (strong, nonatomic) NSString *branchKey;
 @property (strong, nonatomic) NSString *lastRunBranchKey;
-@property (strong, nonatomic) NSDate *lastStrongMatchDate;
+@property (strong, nonatomic) NSDate   *lastStrongMatchDate;
 @property (strong, nonatomic) NSString *appVersion;
 @property (strong, nonatomic) NSString *deviceFingerprintID;
 @property (strong, nonatomic) NSString *sessionID;
@@ -29,8 +30,8 @@
 @property (strong, nonatomic) NSString *installParams;
 @property (assign, nonatomic) BOOL isDebug;
 @property (assign, nonatomic) BOOL shouldWaitForInit;
-@property (assign, nonatomic) BOOL suppressWarningLogs;
 @property (assign, nonatomic) BOOL checkedFacebookAppLinks;
+@property (assign, nonatomic) BOOL checkedAppleSearchAdAttribution;
 @property (assign, nonatomic) NSInteger retryCount;
 @property (assign, nonatomic) NSTimeInterval retryInterval;
 @property (assign, nonatomic) NSTimeInterval timeout;
@@ -38,15 +39,15 @@
 @property (strong, nonatomic) NSMutableDictionary *savedAnalyticsData;
 @property (assign, nonatomic) NSInteger installRequestDelay;
 @property (strong, nonatomic) NSDictionary *appleSearchAdDetails;
+@property (strong, nonatomic) NSString *lastSystemBuildVersion;
+@property (strong, nonatomic) NSString *browserUserAgentString;
+@property (strong) NSString *branchAPIURL;
 
 + (BNCPreferenceHelper *)preferenceHelper;
-+ (NSURL*) URLForBranchDirectory;
 
 - (NSString *)getAPIBaseURL;
 - (NSString *)getAPIURL:(NSString *)endpoint;
 - (NSString *)getEndpointFromURL:(NSString *)url;
-
-- (NSString *)getBranchKey:(BOOL)isLive;
 
 - (void)clearUserCreditsAndCounts;
 - (void)clearUserCredits;
@@ -70,12 +71,12 @@
 - (NSMutableDictionary *)instrumentationDictionary;
 - (void)clearInstrumentationDictionary;
 
-- (void)log:(NSString *)filename line:(int)line message:(NSString *)format, ...;
-- (void)logWarning:(NSString *)message;
-
 - (void)saveBranchAnalyticsData:(NSDictionary *)analyticsData;
 - (void)clearBranchAnalyticsData;
 - (NSMutableDictionary *)getBranchAnalyticsData;
 - (NSDictionary *)getContentAnalyticsManifest;
 - (void)saveContentAnalyticsManifest:(NSDictionary *)cdManifest;
+
+- (void) synchronize;  //  Flushes preference queue to persistence.
+
 @end

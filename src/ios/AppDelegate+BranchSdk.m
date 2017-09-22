@@ -22,12 +22,12 @@
 
 @end
 
-@implementation AppDelegate (BranchSdk)
+@implementation AppDelegate (BranchSDK)
 
 // Respond to URI scheme links
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
     // pass the url to the handle deep link call
-    if (![[Branch getInstance] handleDeepLink:url]) {
+    if (![[Branch getInstance] application:app openURL:url options:options]) {
         // do other deep link routing for the Facebook SDK, Pinterest SDK, etc
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVPluginHandleOpenURLNotification object:url]];
         // send unhandled URL to notification
@@ -46,6 +46,16 @@
     }
 
     return YES;
+}
+
+// Respond to Push Notifications
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    @try {
+        [[Branch getInstance] handlePushNotification:userInfo];
+    }
+    @catch (NSException *exception) {
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"BSDKPostUnhandledURL" object:userInfo]];
+    }
 }
 
 @end
