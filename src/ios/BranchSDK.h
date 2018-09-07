@@ -1,10 +1,3 @@
-//
-//  BranchSDK.h
-//  Cordova-Ionic-PhoneGap-Deferred-Deep-Linking-SDK
-//
-//  Copyright © 2016 Branch Metrics. All rights reserved.
-//
-
 #import "BranchNPM.h"
 
 // #ifdef BRANCH_NPM
@@ -34,7 +27,7 @@
 
 // BranchSDK Basic Methods
 - (void)initSession:(CDVInvokedUrlCommand*)command;
-- (void)setMixpanelToken:(CDVInvokedUrlCommand*)command;
+- (void)disableTracking:(CDVInvokedUrlCommand*)command;
 - (void)setDebug:(CDVInvokedUrlCommand*)command;
 - (void)getAutoInstance:(CDVInvokedUrlCommand*)command;
 - (void)getLatestReferringParams:(CDVInvokedUrlCommand*)command;

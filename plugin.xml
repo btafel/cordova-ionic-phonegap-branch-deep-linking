@@ -108,6 +108,9 @@ SOFTWARE.
         <framework src="CoreTelephony.framework"/>
         <framework src="CoreSpotlight.framework"/>
         <framework src="MobileCoreServices.framework"/>
+    
+    <framework src="iAd.framework" />
+
         <header-file src="src/ios/BranchNPM.h" />
         <header-file src="src/ios/BranchSDK.h" />
         <source-file src="src/ios/BranchSDK.m" />
@@ -119,7 +122,11 @@ SOFTWARE.
     <header-file src="src/ios/dependencies/Fabric/FABKitProtocol.h" />
     <header-file src="src/ios/dependencies/Fabric/Fabric+FABKits.h" />
     <header-file src="src/ios/dependencies/Fabric/Fabric.h" />
-    
+
+    <header-file src="src/ios/dependencies/Branch-SDK/BNCApplication.h" />
+    <source-file src="src/ios/dependencies/Branch-SDK/BNCApplication.m" />
+    <header-file src="src/ios/dependencies/Branch-SDK/BNCAvailability.h" />
+    <source-file src="src/ios/dependencies/Branch-SDK/BNCAvailability.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/BNCCallbacks.h" />
     <header-file src="src/ios/dependencies/Branch-SDK/BNCCommerceEvent.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/BNCCommerceEvent.m" />
@@ -141,6 +148,9 @@ SOFTWARE.
     <source-file src="src/ios/dependencies/Branch-SDK/BNCError.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/BNCFabricAnswers.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/BNCFabricAnswers.m" />
+    <header-file src="src/ios/dependencies/Branch-SDK/BNCFieldDefines.h" />
+    <header-file src="src/ios/dependencies/Branch-SDK/BNCKeyChain.h" />
+    <source-file src="src/ios/dependencies/Branch-SDK/BNCKeyChain.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/BNCLinkCache.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/BNCLinkCache.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/BNCLinkData.h" />
@@ -151,13 +161,16 @@ SOFTWARE.
     <source-file src="src/ios/dependencies/Branch-SDK/BNCLog.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/BNCPreferenceHelper.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/BNCPreferenceHelper.m" />
+    <header-file src="src/ios/dependencies/Branch-SDK/BNCSpotlightService.h" />
+    <source-file src="src/ios/dependencies/Branch-SDK/BNCSpotlightService.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/BNCStrongMatchHelper.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/BNCStrongMatchHelper.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/BNCSystemObserver.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/BNCSystemObserver.m" />
-    <header-file src="src/ios/dependencies/Branch-SDK/BNCXcode7Support.h" />
-    <source-file src="src/ios/dependencies/Branch-SDK/BNCXcode7Support.m" />
-    <header-file src="src/ios/dependencies/Branch-SDK/Branch-SDK-Prefix.pch" />
+    <header-file src="src/ios/dependencies/Branch-SDK/BNCURLBlackList.h" />
+    <source-file src="src/ios/dependencies/Branch-SDK/BNCURLBlackList.m" />
+    <header-file src="src/ios/dependencies/Branch-SDK/Branch+Validator.h" />
+    <source-file src="src/ios/dependencies/Branch-SDK/Branch+Validator.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/Branch.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/Branch.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/BranchActivityItemProvider.h" />
@@ -173,6 +186,10 @@ SOFTWARE.
     <header-file src="src/ios/dependencies/Branch-SDK/BranchContentPathProperties.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/BranchContentPathProperties.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/BranchDeepLinkingController.h" />
+    <header-file src="src/ios/dependencies/Branch-SDK/BranchDelegate.h" />
+    <source-file src="src/ios/dependencies/Branch-SDK/BranchDelegate.m" />
+    <header-file src="src/ios/dependencies/Branch-SDK/BranchEvent.h" />
+    <source-file src="src/ios/dependencies/Branch-SDK/BranchEvent.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/BranchLinkProperties.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/BranchLinkProperties.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/BranchShareLink.h" />
@@ -187,7 +204,9 @@ SOFTWARE.
     <source-file src="src/ios/dependencies/Branch-SDK/NSMutableDictionary+Branch.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/NSString+Branch.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/NSString+Branch.m" />
-    
+    <header-file src="src/ios/dependencies/Branch-SDK/UIViewController+Branch.h" />
+    <source-file src="src/ios/dependencies/Branch-SDK/UIViewController+Branch.m" />
+
     <header-file src="src/ios/dependencies/Branch-SDK/Networking/BNCNetworkService.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/Networking/BNCNetworkService.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/Networking/BNCNetworkServiceProtocol.h" />
@@ -199,7 +218,7 @@ SOFTWARE.
     <source-file src="src/ios/dependencies/Branch-SDK/Networking/BNCServerRequestQueue.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/Networking/BNCServerResponse.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/Networking/BNCServerResponse.m" />
-    
+
     <header-file src="src/ios/dependencies/Branch-SDK/Networking/Requests/BranchCloseRequest.h" />
     <source-file src="src/ios/dependencies/Branch-SDK/Networking/Requests/BranchCloseRequest.m" />
     <header-file src="src/ios/dependencies/Branch-SDK/Networking/Requests/BranchCreditHistoryRequest.h" />
