@@ -27,7 +27,7 @@ SOFTWARE.
 
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="io.branch.sdk"
-        version="2.6.13">
+        version="3.0.0">
   <!-- id="branch-cordova-sdk" -->
 
     <name>branch-cordova-sdk</name>
